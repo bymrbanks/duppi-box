@@ -5,14 +5,14 @@ import CredentialsProvider from "next-auth/providers/credentials";
 // Prisma adapter for NextAuth, optional and can be removed
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "../../../server/db/client";
-
+console.log(process.env.GITHUB_ID)
 export const authOptions: NextAuthOptions = {
   // Configure one or more authentication providers
   adapter: PrismaAdapter(prisma),
   providers: [
     GithubProvider({
-      clientId: process.env.GITHUB_ID,
-      clientSecret: process.env.GITHUB_SECRET,
+      clientId: process.env.GITHUB_ID ? process.env.GITHUB_ID : "",
+      clientSecret: process.env.GITHUB_SECRET ? process.env.GITHUB_SECRET : "",
     }),
     // ...add more providers here
     CredentialsProvider({
@@ -30,6 +30,15 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+  callbacks: {
+    session: async ({session, token,user}) => {
+      if(user){
+        session.id = user.id;
+      }
+      return session
+    }
+  },
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
 export default NextAuth(authOptions);

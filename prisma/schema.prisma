@@ -64,26 +64,26 @@ model User {
 }
 
 model Match {
-    id        String   @id @default(cuid())
-    title     String
+    id        String    @id @default(cuid())
+    title     String?
     player    Player[]
-    winner    String
-    loser     String
-    status    String
-    rounds    Int
-    completed Boolean
-    startTime DateTime
+    winner    String?
+    loser     String?
+    status    String?
+    rounds    Int?
+    completed Boolean?
+    startTime DateTime?
     createdAt DateTime
-    updatedAt DateTime
+    updatedAt DateTime?
 }
 
 model Player {
-    id      String @id @default(cuid())
-    matchId String @unique
-    match   Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
-    userId  String @unique
-    user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-    status  String
-    action  String
-    score   Int
+    id      String  @id @default(cuid())
+    matchId String
+    match   Match   @relation(fields: [matchId], references: [id], onDelete: Cascade)
+    userId  String
+    user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    status  String?
+    action  String?
+    score   Int?
 }
