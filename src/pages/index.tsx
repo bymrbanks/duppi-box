@@ -30,12 +30,14 @@ const Home: NextPage = () => {
     name: "Kacy",
     action: "",
     score: 0,
+    status: ""
   });
   const [player2, setPlayer2] = useState<Player>({
     id: "",
     name: "Carlton",
     action: "",
     score: 0,
+    status: ""
   });
 
   const joinMatch = (id: string) => {
@@ -106,7 +108,8 @@ const Home: NextPage = () => {
           getMatch.data.map((match) => {
             return (
               <div className="w-1/2 p-2" key={match.id}>
-                <button
+                <a
+                  href={"./game/match/"+match.id}
                   className="p-2 bg-blue-500"
                   onClick={() => {
                     if (session?.id) {
@@ -115,7 +118,7 @@ const Home: NextPage = () => {
                   }}
                 >
                   Join Match {match.id}
-                </button>
+                </a>
               </div>
             );
           })}

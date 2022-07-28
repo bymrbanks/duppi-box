@@ -4,11 +4,11 @@ export interface Player {
     name: string;
     action: string;
     score: number;
+    status: string;
 }
 export interface Match {
     id: string;
-    player_1_id: Player;
-    player_2_id: Player;
+    player: Player[];
     winner: string;
     loser: string;
     status: string;
