@@ -70,7 +70,7 @@ model Match {
     winner    String?
     loser     String?
     status    String?
-    rounds    Int?
+    rounds    Int       @default(0)
     completed Boolean?
     startTime DateTime?
     createdAt DateTime
@@ -78,12 +78,12 @@ model Match {
 }
 
 model Player {
-    id      String  @id @default(cuid())
+    id      String    @id @default(cuid())
     matchId String
-    match   Match   @relation(fields: [matchId], references: [id], onDelete: Cascade)
+    match   Match     @relation(fields: [matchId], references: [id], onDelete: Cascade)
     userId  String
-    user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-    status  String?
-    action  String?
-    score   Int?
+    user    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    action  String[]
+    score   Int       @default(0)
+    rounds  Boolean[]
 }
