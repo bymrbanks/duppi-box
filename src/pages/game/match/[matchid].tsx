@@ -5,7 +5,9 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Actions from "../../../components/match/Actions";
 import { Player } from "@prisma/client";
-
+import io from "socket.io-client";
+import useSocket from "../../../hooks/useSocket";
+let socket: any;
 
 function PlayMatch() {
   const router = useRouter();
@@ -16,22 +18,23 @@ function PlayMatch() {
     "match.getMatch",
     { id: matchid as string },
   ]);
-  const getResults = trpc.useMutation("match.getResults",);
+  const getResults = trpc.useMutation("match.getResults");
   const submitAction = trpc.useMutation("match.submitAction");
   const [currentPlayer, setCurrentPlayer] = useState<Player>();
   const [opponentPlayer, setOpponentPlayer] = useState<Player>();
   const [match, setMatch] = useState(matchQuery.data);
-
+  const [round, setRound] = useState<number>(0);
   useEffect(() => {
     if (matchQuery.data == null || matchQuery.data == undefined) return;
     setMatch(matchQuery.data);
     sortPlayers();
+    setRound(matchQuery?.data?.rounds as number);
   }, [matchQuery]);
 
   const sortPlayers = () => {
     if (match != null && match) {
-      match?.player?.map((player:Player) => {
-        if (player?.userId === match?.opponent?.id) {
+      match?.player?.map((player: Player) => {
+        if (player.userId === match.opponent?.id) {
           setCurrentPlayer(player);
         } else {
           setOpponentPlayer(player);
@@ -40,37 +43,61 @@ function PlayMatch() {
     }
   };
 
+  useEffect(() => {
+    socketInitializer();
+    return () => {
+      console.log("This will be logged on unmount");
+    };
+  }, []);
+
+  const socketInitializer = async () => {
+    await fetch("/api/socket/server");
+    socket = io();
+
+    socket.on("connect", () => {
+      console.log(session + "connected");
+    });
+
+    socket.on("playerMove", (playerMove: {}) => {
+      utils.invalidateQueries(["match.getMatch"]);
+    });
+  };
+
+  const updatePlayerMove = () => {
+    let playerMove = { id: "1", move: true, rounds: 1 };
+    socket.emit("playerMove", playerMove);
+  };
+
   const gameAction = (play: string) => {
     if (currentPlayer) {
       let playerId = currentPlayer.id as string;
       let action = play;
-
+      let matchId = match?.id as string;
+      
       submitAction.mutate(
-        { playerId, action },
+        { playerId, action, matchId },
+        {
+          onSuccess: () => {
+            // utils.invalidateQueries(["match.getMatch"]);
+            updatePlayerMove();
+          },
+        }
+      );
+
+      getResults.mutate(
+        { matchId: matchId },
         {
           onSuccess: () => {
             utils.invalidateQueries(["match.getMatch"]);
           },
         }
       );
-      let matchId = match?.id as string;
-      getResults.mutate(
-        {matchId: matchId},
-        {
-          onSuccess: () => {
-            utils.invalidateQueries(["match.getMatch"]);
-          },
-        }
-        )
     }
   };
 
   // const gameResults = ()=>{
   //   getResults.query(match?.id)
   // }
-
-
-
 
   return (
     <div>
@@ -85,8 +112,8 @@ function PlayMatch() {
         {currentPlayer && (
           <div>
             <div>Me: {session?.user?.name}</div>
-            <div>Status : {currentPlayer?.status} </div>
-            <div>Action : {currentPlayer?.action}</div>
+            {/* <div>Status : {currentPlayer?.status} </div> */}
+            <div>Action : {currentPlayer?.action[round]}</div>
             <div>Score : {currentPlayer?.score}</div>
           </div>
         )}
@@ -95,9 +122,9 @@ function PlayMatch() {
 
         {opponentPlayer && (
           <div>
-            <div>Opponent: { match?.opponent?.name}</div>
-            <div>Status : {opponentPlayer?.status} </div>
-            <div>Action : {opponentPlayer?.action}</div>
+            <div>Opponent: {match?.opponent?.name}</div>
+            {/* <div>Status : {opponentPlayer?.status} </div> */}
+            <div>Action : {opponentPlayer?.action[round]}</div>
             <div>Score : {opponentPlayer?.score}</div>
           </div>
         )}

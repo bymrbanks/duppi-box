@@ -105,7 +105,7 @@ const Home: NextPage = () => {
         </button>
 
         {getMatch.data &&
-          getMatch.data.map((match) => {
+          getMatch.data.map((match: Match) => {
             return (
               <div className="w-1/2 p-2" key={match.id}>
                 <a
