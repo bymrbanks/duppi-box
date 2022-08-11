@@ -4,9 +4,18 @@ import { trpc } from "../../../utils/trpc";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Actions from "../../../components/match/Actions";
+import PlayerUI from "../../../components/match/PlayerUI";
 import { Player } from "@prisma/client";
 import io from "socket.io-client";
 import useSocket from "../../../hooks/useSocket";
+import MatchHUD from "../../../components/match/MatchHUD";
+import gameBg from"../../../images/match/game-bg.png";
+import Image from "next/image";
+
+
+
+
+
 let socket: any;
 
 function PlayMatch() {
@@ -73,7 +82,7 @@ function PlayMatch() {
       let playerId = currentPlayer.id as string;
       let action = play;
       let matchId = match?.id as string;
-      
+
       submitAction.mutate(
         { playerId, action, matchId },
         {
@@ -100,9 +109,15 @@ function PlayMatch() {
   // }
 
   return (
-    <div>
-      {" "}
-      Welcome to match: {matchid}
+    
+    <div className="gameContainer">
+      <img alt="" className="gameBg"  width={gameBg.width} height={gameBg.height} src={gameBg.src} />
+      <div className="flex  justify-end">
+        {opponentPlayer && (
+          <PlayerUI moves={opponentPlayer?.action} name={match?.opponent?.name} opponent={true} />
+        )}
+      </div>
+      <MatchHUD /> Welcome to match: {matchid}
       <div>Round: {match?.rounds}</div>
       <div>Winner: {match?.winner}</div>
       <div>Loser: {match?.loser}</div>
@@ -129,11 +144,16 @@ function PlayMatch() {
           </div>
         )}
 
-        <br />
-        <br />
-        <br />
-        <br />
-        <Actions ready={true} action={gameAction} />
+        {currentPlayer && (
+          <PlayerUI
+            opponent={false}
+            moves={currentPlayer?.action}
+            name={session?.user?.name ? session?.user?.name : ""}
+          />
+        )}
+        <div className="actionsContainer">
+          <Actions ready={true} action={gameAction} />
+        </div>
       </div>
     </div>
   );

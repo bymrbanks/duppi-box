@@ -14,8 +14,8 @@ function Actions({ready, action }: Actions) {
   };
 
   return (
-    <div className="px-28">
-      <div className="flex w-full justify-items-center  justify-between text-6xl">
+    <div className="py-10">
+      <div className="options_container flex w-full justify-items-center  justify-between text-6xl">
         <div
           id="option_rock"
           className="options"

@@ -1,0 +1,48 @@
+.text-outline {
+  font-weight: 900;
+  color: white;
+  text-shadow: -2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 2px 2px 0 #000,
+    2px 2px 0 #000, 2px -2px 0 #000;
+}
+
+
+.options{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 88px;
+    height: 88px;
+    border:3px solid #000;
+    border-radius:10px
+}
+
+.options_container{
+    max-width: 336px;
+    margin: 0 auto;
+}
+
+
+.gameContainer{
+    max-width: 390px;
+    margin:auto;
+    // background-color: #D0DE55
+    position: relative;
+}
+
+.player-health-bar-fill{
+    background-color: #C7FF4F;
+}
+.actionsContainer{
+    background-color: #F5F5F5;
+    border-top:3px solid #000
+}
+
+.gameBg{
+    position: absolute !important;
+    z-index: -1;
+    left: 0;
+    object-fit: cover;
+    width: 100% !important;
+    height: 100% !important;
+}
