@@ -142,7 +142,7 @@ function PlayMatch() {
             <div>Action : {opponentPlayer?.action[round]}</div>
             <div>Score : {opponentPlayer?.score}</div>
           </div>
-        )}
+        )} 
 
         {currentPlayer && (
           <PlayerUI
